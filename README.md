@@ -4,11 +4,12 @@ O **Dr. Energia** é um aplicativo interativo e moderno para cálculo e simulaç
 
 ---
 
-## 🚀 Como Executar
+## 🚀 Como Acessar e Executar
 
-Basta dar um duplo clique no arquivo **`iniciar.bat`** ou abrir o arquivo **`index.html`** diretamente em qualquer navegador (Google Chrome, Microsoft Edge, Firefox, etc.).
+- **🌐 Versão Online (GitHub Pages):** [https://marcnilmat.github.io/dr-energia/](https://marcnilmat.github.io/dr-energia/)
+- **💻 Execução Local:** Dê um duplo clique no arquivo **`iniciar.bat`** ou abra o arquivo **`index.html`** diretamente em qualquer navegador.
 
-Não é necessária nenhuma instalação ou conexão à internet (funciona 100% offline).
+Não é necessária nenhuma instalação prévia (funciona 100% offline).
 
 ---
 
