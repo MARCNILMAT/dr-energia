@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dr. Energia - Calculadora de Consumo e Gastos Elétricos</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- CABEÇALHO -->
+  <header class="app-header">
+    <div class="header-content">
+      <div class="logo-area">
+        <div class="logo-icon">⚡</div>
+        <div class="logo-text">
+          <h1>Dr. <span>Energia</span></h1>
+          <p>Calculadora Inteligente de Consumo e Custo de Energia Residencial</p>
+        </div>
+      </div>
+      <div class="header-badges">
+        <div class="header-badge">
+          <span>💡</span> Cálculos em tempo real
+        </div>
+        <div class="header-badge">
+          <span>📊</span> Diário, Mensal & Por Uso
+        </div>
+        <div class="header-badge">
+          <span>🇧🇷</span> Padrão Tarifário Brasil
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- CONTAINER PRINCIPAL -->
+  <main class="container">
+
+    <!-- BARRA DE TARIFA FLUTUANTE -->
+    <section class="tariff-bar-card">
+      <div class="tariff-item">
+        <label for="select-regiao">
+          <span>📍</span> Concessionária / Região
+        </label>
+        <select id="select-regiao">
+          <!-- Preenchido via JS -->
+        </select>
+      </div>
+
+      <div class="tariff-item">
+        <label for="input-tarifa-base">
+          <span>💵</span> Tarifa Base (R$ / kWh)
+        </label>
+        <div class="tariff-input-group">
+          <span class="input-prefix">R$</span>
+          <input type="number" id="input-tarifa-base" step="0.01" min="0.10" max="5.00" value="0.85">
+        </div>
+      </div>
+
+      <div class="tariff-item">
+        <label for="select-bandeira">
+          <span>🚩</span> Bandeira Tarifária ANEEL
+        </label>
+        <select id="select-bandeira">
+          <!-- Preenchido via JS -->
+        </select>
+      </div>
+
+      <div class="tariff-summary">
+        <span class="tariff-summary-title">Tarifa Efetiva Aplicada</span>
+        <span class="tariff-summary-value" id="tarifa-efetiva-val">R$ 0,850 / kWh</span>
+      </div>
+    </section>
+
+    <!-- NAVEGAÇÃO ENTRE ABAS -->
+    <nav class="tabs-navigation">
+      <button class="tab-btn active" data-tab="tab-calculo-rapido">
+        <span>🎯</span>
+        <span>Cálculo Rápido por Uso</span>
+        <span class="tab-badge">Ex: Banho 30 min, Airfryer</span>
+      </button>
+
+      <button class="tab-btn" data-tab="tab-residencia">
+        <span>🏠</span>
+        <span>Minha Residência Completa</span>
+        <span class="tab-badge" id="residencia-count-badge">0</span>
+      </button>
+    </nav>
+
+    <!-- ABA 1: CÁLCULO RÁPIDO / USO ESPECÍFICO -->
+    <section id="tab-calculo-rapido" class="tab-pane active">
+      <div class="quick-calc-layout">
+        
+        <!-- COLUNA 1: SELETOR DE EQUIPAMENTOS -->
+        <div class="card">
+          <h2 class="card-title">
+            <span>🔌</span> 1. Selecione o Equipamento
+          </h2>
+          <p class="card-subtitle">Escolha o eletrodoméstico que deseja calcular o consumo e custo:</p>
+
+          <!-- Filtro por Categoria -->
+          <div class="filter-pills" id="filter-pills-container">
+            <!-- Gerado via JS -->
+          </div>
+
+          <!-- Campo de Busca -->
+          <div style="margin-bottom: 0.85rem;">
+            <input type="text" id="search-equip-input" placeholder="🔍 Buscar aparelho (ex: chuveiro, airfryer, forno, micro-ondas...)">
+          </div>
+
+          <!-- Lista de Equipamentos -->
+          <div class="equipment-grid-picker" id="equipments-list">
+            <!-- Gerado via JS -->
+          </div>
+        </div>
+
+        <!-- COLUNA 2: DETALHES, PRESETS E RESULTADO -->
+        <div class="calc-panel">
+          <div class="selected-equip-header">
+            <div class="selected-equip-meta">
+              <div class="equip-icon" id="selected-equip-icon">⚡</div>
+              <div>
+                <h3 class="selected-equip-title" id="selected-equip-title">Chuveiro Elétrico</h3>
+                <span class="selected-equip-category" id="selected-equip-category">Banheiro • Alta potência</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Potência em Watts -->
+          <div class="form-section">
+            <div class="form-label-row">
+              <label class="form-label" for="input-quick-power">
+                <span>⚡</span> Potência do Aparelho
+              </label>
+              <span class="form-subval">Potência em Watts (W)</span>
+            </div>
+            <div class="tariff-input-group">
+              <input type="number" id="input-quick-power" step="50" min="5" max="12000" value="5500">
+              <span class="input-prefix">Watts</span>
+            </div>
+            <small style="color: #64748b; font-size: 0.76rem; display: block; margin-top: 4px;">
+              💡 Você pode ajustar a potência de acordo com o manual ou etiqueta do seu aparelho.
+            </small>
+          </div>
+
+          <!-- Presets Rápidos de Uso Comum -->
+          <div class="form-section">
+            <div class="form-label-row">
+              <label class="form-label">
+                <span>⏱️</span> Exemplos Rápidos de Uso (1 Clique)
+              </label>
+            </div>
+            <div class="presets-container" id="presets-container">
+              <!-- Botões de presets (ex: Banho de 10 min, Banho 15 min, Banho 30 min) -->
+            </div>
+          </div>
+
+          <!-- Ajuste Fino do Tempo -->
+          <div class="form-section">
+            <div class="form-label-row">
+              <label class="form-label" for="input-quick-time">
+                <span>⏳</span> Tempo Ligado
+              </label>
+              <span class="form-subval" id="quick-time-display-badge">30 minutos</span>
+            </div>
+            <div class="slider-container">
+              <input type="range" id="range-quick-time" min="1" max="180" step="1" value="30">
+              <div style="width: 110px; display: flex; align-items: center; gap: 4px;">
+                <input type="number" id="input-quick-time" min="1" max="720" value="30" style="padding: 0.4rem 0.5rem; text-align: center;">
+                <span style="font-size: 0.8rem; font-weight: 600; color: #64748b;">min</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Modo de Período do Cálculo -->
+          <div class="form-section">
+            <div class="form-label-row">
+              <label class="form-label">
+                <span>📅</span> Tipo de Cálculo
+              </label>
+            </div>
+            <div class="period-selector-row">
+              <button type="button" class="period-card-btn active" data-period="sessao">
+                <span class="p-title">🎯 Deste Uso Único</span>
+                <span class="p-sub">Custo de 1 banho/uso</span>
+              </button>
+              <button type="button" class="period-card-btn" data-period="diario">
+                <span class="p-title">☀️ Gasto Diário</span>
+                <span class="p-sub">Custo por dia</span>
+              </button>
+              <button type="button" class="period-card-btn" data-period="mensal">
+                <span class="p-title">🗓️ Gasto Mensal</span>
+                <span class="p-sub">Projeção no mês</span>
+              </button>
+            </div>
+
+            <!-- Frequência semanal para modo sessão -->
+            <div id="freq-selector-box" style="margin-top: -0.75rem; margin-bottom: 0.75rem;">
+              <div style="display: flex; align-items: center; justify-content: space-between; font-size: 0.82rem; color: #475569; background: #f8fafc; padding: 0.5rem 0.75rem; border-radius: 8px; border: 1px solid #e2e8f0;">
+                <span>Quantas vezes por semana isso se repete?</span>
+                <select id="select-freq-semana" style="width: auto; padding: 0.25rem 0.6rem; font-size: 0.82rem;">
+                  <option value="1">1 vez / semana (~4x mês)</option>
+                  <option value="2">2 vezes / semana (~8x mês)</option>
+                  <option value="3">3 vezes / semana (~13x mês)</option>
+                  <option value="4">4 vezes / semana (~17x mês)</option>
+                  <option value="5">5 vezes / semana (dias úteis)</option>
+                  <option value="7" selected>Todos os dias (7x semana / 30x mês)</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- CARD DE DESTAQUE DO RESULTADO -->
+          <div class="result-box-spotlight">
+            <div class="result-header-label" id="result-spotlight-label">Custo Deste Uso (30 min)</div>
+            <div class="result-main-value">
+              <span id="result-main-price">R$ 1,17</span>
+            </div>
+
+            <div class="result-metrics-grid">
+              <div class="metric-item">
+                <span class="metric-label">Energia gasta</span>
+                <span class="metric-value" id="metric-kwh-val">2.75 kWh</span>
+              </div>
+              <div class="metric-item">
+                <span class="metric-label" id="metric-mes-label">Projeção Mensal</span>
+                <span class="metric-value" id="metric-mes-val">R$ 35,10</span>
+              </div>
+              <div class="metric-item">
+                <span class="metric-label">Projeção Anual</span>
+                <span class="metric-value" id="metric-ano-val">R$ 421,20</span>
+              </div>
+            </div>
+
+            <div class="eco-insight-box">
+              <span id="eco-insight-content">
+                💡 Reduzir este banho de 30 min para 15 min economizará cerca de <strong>R$ 17,55 por mês</strong> na sua conta!
+              </span>
+            </div>
+          </div>
+
+          <!-- Botão para Adicionar à Residência -->
+          <div style="margin-top: 1.25rem;">
+            <button type="button" class="btn btn-primary btn-block" id="btn-add-quick-to-house">
+              <span>➕</span> Adicionar este Equipamento à Minha Residência
+            </button>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ABA 2: SIMULADOR RESIDENCIAL COMPLETO -->
+    <section id="tab-residencia" class="tab-pane">
+      
+      <!-- CARDS DE TOTAIS DA CASA -->
+      <div class="house-summary-cards">
+        <div class="summary-card highlight">
+          <div class="summary-card-icon">💰</div>
+          <div class="summary-card-data">
+            <span class="summary-card-label">Gasto Mensal Estimado</span>
+            <span class="summary-card-value" id="house-cost-monthly">R$ 0,00</span>
+            <span class="summary-card-sub">Baseado na tarifa atual</span>
+          </div>
+        </div>
+
+        <div class="summary-card">
+          <div class="summary-card-icon">☀️</div>
+          <div class="summary-card-data">
+            <span class="summary-card-label">Média Diária</span>
+            <span class="summary-card-value" id="house-cost-daily">R$ 0,00 / dia</span>
+            <span class="summary-card-sub">Consumo rateado</span>
+          </div>
+        </div>
+
+        <div class="summary-card">
+          <div class="summary-card-icon">⚡</div>
+          <div class="summary-card-data">
+            <span class="summary-card-label">Consumo Mensal Total</span>
+            <span class="summary-card-value" id="house-kwh-total">0.0 kWh</span>
+            <span class="summary-card-sub">Energia total consumida</span>
+          </div>
+        </div>
+
+        <div class="summary-card">
+          <div class="summary-card-icon">📅</div>
+          <div class="summary-card-data">
+            <span class="summary-card-label">Projeção Anual</span>
+            <span class="summary-card-value" id="house-cost-yearly">R$ 0,00</span>
+            <span class="summary-card-sub">12 meses de consumo</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- BARRA DE FERRAMENTAS DA RESIDÊNCIA -->
+      <div class="house-toolbar">
+        <div style="display: flex; align-items: center; gap: 0.75rem;">
+          <button type="button" class="btn btn-primary" id="btn-abrir-modal-novo">
+            <span>➕</span> Novo Aparelho Customizado
+          </button>
+          <button type="button" class="btn btn-secondary" id="btn-carregar-padrao" title="Carrega equipamentos típicos de uma residência para teste">
+            <span>🔄</span> Carregar Casa Típica
+          </button>
+        </div>
+
+        <div class="toolbar-actions">
+          <!-- Alternador de Visão Mensal / Diária -->
+          <div class="view-mode-toggle">
+            <button type="button" class="view-toggle-btn active" data-view="mensal">
+              <span>Mensal</span>
+            </button>
+            <button type="button" class="view-toggle-btn" data-view="diaria">
+              <span>Diário</span>
+            </button>
+          </div>
+
+          <button type="button" class="btn btn-secondary" onclick="window.print()" title="Imprimir ou Salvar em PDF">
+            <span>🖨️</span> Imprimir / PDF
+          </button>
+          <button type="button" class="btn btn-danger-outline" id="btn-limpar-residencia" title="Excluir todos os equipamentos">
+            <span>🗑️</span> Limpar
+          </button>
+        </div>
+      </div>
+
+      <!-- TABELA DE EQUIPAMENTOS DA CASA -->
+      <div class="table-responsive">
+        <table class="house-table">
+          <thead>
+            <tr>
+              <th>Equipamento</th>
+              <th>Potência</th>
+              <th>Qtd</th>
+              <th>Tempo de Uso</th>
+              <th>Consumo (kWh)</th>
+              <th>Custo Estimado</th>
+              <th>% do Total</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody id="house-table-body">
+            <!-- Linhas preenchidas via JS -->
+          </tbody>
+        </table>
+
+        <!-- Estado Vazio -->
+        <div class="empty-state" id="house-empty-state" style="display: none;">
+          <div class="empty-state-icon">🏠</div>
+          <h3>Sua lista residencial está vazia</h3>
+          <p>Selecione aparelhos no "Cálculo Rápido" e clique em "Adicionar", ou clique em "Carregar Casa Típica" para ver uma simulação completa pronta.</p>
+        </div>
+      </div>
+
+      <!-- PAINEL VISUAL: GRÁFICO E VILÕES DO CONSUMO -->
+      <div class="house-breakdown-grid">
+        <!-- Gráfico Donut de Categorias -->
+        <div class="card">
+          <h3 class="card-title">
+            <span>📊</span> Distribuição por Categoria
+          </h3>
+          <p class="card-subtitle">Onde você gasta mais energia na sua residência:</p>
+          <div style="display: flex; justify-content: center; align-items: center; margin: 1rem 0;">
+            <canvas id="chart-canvas" width="260" height="260"></canvas>
+          </div>
+          <div id="chart-legend" style="margin-top: 1rem;">
+            <!-- Legenda gerada via JS -->
+          </div>
+        </div>
+
+        <!-- Ranking dos Vilões da Conta de Luz -->
+        <div class="card">
+          <h3 class="card-title">
+            <span>⚠️</span> Maiores Vilões da Conta
+          </h3>
+          <p class="card-subtitle">Os aparelhos que mais pesam no seu bolso todo mês:</p>
+          <div id="ranking-viloes-container" style="margin-top: 0.75rem;">
+            <!-- Ranking gerado via JS -->
+          </div>
+
+          <div style="margin-top: 1.5rem; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 1rem; font-size: 0.85rem; color: #1e40af;">
+            <strong>💡 Como o Dr. Energia calcula?</strong><br>
+            Consumo (kWh) = [Potência (W) ÷ 1.000] × Tempo de uso (horas) × Dias.<br>
+            Custo (R$) = Consumo (kWh) × (Tarifa da Concessionária + Bandeira ANEEL).
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- MODAL: NOVO EQUIPAMENTO PERSONALIZADO -->
+  <div class="modal-overlay" id="modal-novo-equip">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Adicionar Equipamento Personalizado</h3>
+        <button type="button" class="modal-close" id="btn-fechar-modal">&times;</button>
+      </div>
+
+      <form id="form-novo-equip">
+        <div class="form-section">
+          <label class="form-label" for="novo-nome">Nome do Equipamento</label>
+          <input type="text" id="novo-nome" placeholder="Ex: Bomba da Piscina, Adega, etc." required>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.85rem;" class="form-section">
+          <div>
+            <label class="form-label" for="novo-categoria">Categoria</label>
+            <select id="novo-categoria">
+              <option value="Cozinha">Cozinha</option>
+              <option value="Banheiro">Banheiro</option>
+              <option value="Climatização">Climatização</option>
+              <option value="Lavanderia">Lavanderia</option>
+              <option value="Entretenimento">Entretenimento</option>
+              <option value="Escritório">Escritório</option>
+              <option value="Iluminação">Iluminação</option>
+              <option value="Diversos" selected>Diversos</option>
+            </select>
+          </div>
+          <div>
+            <label class="form-label" for="novo-potencia">Potência (Watts)</label>
+            <input type="number" id="novo-potencia" min="1" step="10" placeholder="Ex: 1500" required>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.85rem;" class="form-section">
+          <div>
+            <label class="form-label" for="novo-minutos">Tempo de Uso por Dia</label>
+            <input type="number" id="novo-minutos" min="1" max="1440" placeholder="Minutos por dia" value="60" required>
+          </div>
+          <div>
+            <label class="form-label" for="novo-dias-mes">Dias de Uso no Mês</label>
+            <input type="number" id="novo-dias-mes" min="1" max="30" value="30" required>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <label class="form-label" for="novo-qtd">Quantidade de Aparelhos</label>
+          <input type="number" id="novo-qtd" min="1" max="100" value="1" required>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.5rem;">
+          <button type="button" class="btn btn-secondary" onclick="document.getElementById('modal-novo-equip').classList.remove('active')">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Adicionar à Casa</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- CONTAINER DE TOASTS -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <!-- RODAPÉ -->
+  <footer>
+    <p>Dr. Energia &copy; 2026 - Desenvolvido para auxílio no planejamento financeiro e consumo consciente de energia elétrica.</p>
+  </footer>
+
+  <!-- SCRIPTS -->
+  <script src="js/equipamentos.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
